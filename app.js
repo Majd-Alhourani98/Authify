@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const mongoose = require('mongoose');
 
 // Express application
 const app = express();
@@ -20,6 +21,13 @@ app.get('/health', (req, res, next) => {
     message: 'API is healthy and running smoothly 🚀',
   });
 });
+
+// Localhost MongoDB connection
+const DB_URL = 'mongodb://localhost:27017/authify';
+mongoose
+  .connect(DB_URL)
+  .then(conn => console.log('✅ MongoDB connected successfully'))
+  .catch(error => console.log('❌ MongoDB connection failed:', error.message));
 
 // Start the Server
 const PORT = 3000;
