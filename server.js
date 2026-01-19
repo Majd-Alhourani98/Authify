@@ -1,3 +1,6 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const app = require('./app');
 const connectDB = require('./config/database');
 
@@ -5,7 +8,7 @@ const connectDB = require('./config/database');
 connectDB();
 
 // Start the Server
-const PORT = 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`\n${'━'.repeat(21)} 🔥 SERVER ${'━'.repeat(21)}`);
   console.log(`🟢 STATUS      → Running`);
