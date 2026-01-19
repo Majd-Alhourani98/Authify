@@ -24,10 +24,17 @@ app.get('/health', (req, res, next) => {
 
 // Localhost MongoDB connection
 const DB_URL = 'mongodb://localhost:27017/authify';
-mongoose
-  .connect(DB_URL)
-  .then(conn => console.log('✅ MongoDB connected successfully'))
-  .catch(error => console.log('❌ MongoDB connection failed:', error.message));
+const connectDB = async (req, res) => {
+  try {
+    const conn = await mongoose.connect(DB_URL);
+    console.log('✅ MongoDB connected successfully');
+  } catch (error) {
+    console.log('❌ MongoDB connection failed:', error.message);
+  }
+};
+
+// Database connection
+connectDB();
 
 // Start the Server
 const PORT = 3000;
