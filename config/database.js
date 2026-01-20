@@ -1,16 +1,12 @@
 const mongoose = require('mongoose');
+const { buildDatabaseURL } = require('../utils/buildDatabaseURL');
 
 // Localhost MongoDB connection
 // const DB_URL = 'mongodb://localhost:27017/authify';
 
-// Function to build the MongoDB Atlas URL dynamically
-const buildDatabaseURI = (username, password, dbname, baseURL) => {
-  return baseURL.replace('<USERNAME>', username).replace('<PASSWORD>', password).replace('<DBNAME>', dbname);
-};
-
 const { DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_URL } = process.env;
 
-const DB_URL = buildDatabaseURI(DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_URL);
+const DB_URL = buildDatabaseURL(DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_URL);
 
 const connectDB = async () => {
   try {
