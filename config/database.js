@@ -2,11 +2,10 @@ const mongoose = require('mongoose');
 const { buildDatabaseURL } = require('../utils/buildDatabaseURL');
 
 // Localhost MongoDB connection
-// const DB_URL = 'mongodb://localhost:27017/authify';
+const DB_URL = 'mongodb://localhost:27017/authify';
 
-const { DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_URL } = process.env;
-
-const DB_URL = buildDatabaseURL(DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_URL);
+// const { DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_URL } = process.env;
+// const DB_URL = buildDatabaseURL(DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_URL);
 
 const connectDB = async () => {
   try {
