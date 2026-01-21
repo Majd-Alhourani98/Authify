@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const argon2 = require('argon2');
 const { hashPassword } = require('../utils/argon2');
 
 const userSchema = new mongoose.Schema(
@@ -48,6 +47,14 @@ const userSchema = new mongoose.Schema(
     },
   },
 );
+
+userSchema.set('toJSON', {
+  transform: function (doc, ret) {
+    delete ret.password;
+
+    return ret;
+  },
+});
 
 // Pre-save middleware to hash password
 userSchema.pre('save', async function () {
