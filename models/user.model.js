@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const argon2 = require('argon2');
 
 const userSchema = new mongoose.Schema(
   {
@@ -55,7 +55,13 @@ userSchema.pre('save', async function () {
   // Check if password exists before hashing
   if (!this.password) return next();
 
-  this.password = await bcrypt.hash(this.password, 12);
+  this.password = await argon2.hash(this.password, {
+    memoryCost: 65536, // 64 MB
+    timeCost: 3, // 3 iterations
+    parallelism: 4, // 4 threads
+    type: argon2.argon2id, // Recommended hybrid type
+  });
+
   this.passwordConfirm = undefined;
 });
 
