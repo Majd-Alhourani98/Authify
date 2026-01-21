@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const argon2 = require('argon2');
+const { hashPassword } = require('../utils/argon2');
 
 const userSchema = new mongoose.Schema(
   {
@@ -55,12 +56,7 @@ userSchema.pre('save', async function () {
   // Check if password exists before hashing
   if (!this.password) return next();
 
-  this.password = await argon2.hash(this.password, {
-    memoryCost: 65536, // 64 MB
-    timeCost: 3, // 3 iterations
-    parallelism: 4, // 4 threads
-    type: argon2.argon2id, // Recommended hybrid type
-  });
+  this.password = await hashPassword(this.password);
 
   this.passwordConfirm = undefined;
 });
