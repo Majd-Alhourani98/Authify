@@ -78,16 +78,20 @@ userSchema.pre('save', async function () {
 
 // Pre-save middleware to generate Username
 userSchema.pre('save', async function () {
-  const base = this.name.replace(/\s+/g, '-').toLowerCase();
-  let username = `${base}_${createShortId()}`;
+  if (this.isNew && !this.username) {
+    const base = this.name.replace(/\s+/g, '-').toLowerCase();
+    let username = `${base}_${createShortId()}`;
 
-  const doc = await User.findOne({ username }).select('id').lean();
+    const User = mongoose.models.User;
+    let doc = await User.findOne({ username }).select('id').lean();
 
-  while (doc) {
-    doc = await User.findOne({ username }).select('id').lean();
+    while (doc) {
+      username = `${base}_${createShortId()}`;
+      doc = await User.findOne({ username }).select('id').lean();
+    }
+
+    this.username = username;
   }
-
-  this.username = username;
 });
 
 const User = mongoose.model('User', userSchema);
