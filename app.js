@@ -28,7 +28,9 @@ app.get('/health', (req, res, next) => {
 });
 
 app.use('/api/v1/auth', authRouter);
+
 app.all('*', notFound);
+
 app.use(globalError);
 
 module.exports = app;
