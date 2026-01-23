@@ -3,6 +3,7 @@ const morgan = require('morgan');
 
 // Routers
 const authRouter = require('./routes/auth.routes');
+const { AppError } = require('./errors/AppError');
 
 // Express application
 const app = express();
@@ -25,18 +26,6 @@ app.get('/health', (req, res, next) => {
 });
 
 app.use('/api/v1/auth', authRouter);
-
-class AppError extends Error {
-  constructor(message, statusCode) {
-    super(message);
-
-    this.statusCode = statusCode;
-    this.status = String(statusCode).startsWith('4') ? 'fail' : 'error';
-    this.isOperational = true;
-
-    Error.captureStackTrace(this, this.constructor);
-  }
-}
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
