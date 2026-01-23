@@ -26,4 +26,13 @@ app.get('/health', (req, res, next) => {
 
 app.use('/api/v1/auth', authRouter);
 
+app.all('*', (req, res) => {
+  const message = `Can't find ${req.originalUrl} on this server`;
+
+  res.status(404).json({
+    status: 'success',
+    message,
+  });
+});
+
 module.exports = app;
