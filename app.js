@@ -39,15 +39,7 @@ class AppError extends Error {
 }
 
 app.all('*', (req, res, next) => {
-  const message = `Can't find ${req.originalUrl} on this server`;
-
-  const error = {
-    statusCode: 404,
-    status: 'fail',
-    message,
-  };
-
-  next(error);
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
 app.use((err, req, res, next) => {
