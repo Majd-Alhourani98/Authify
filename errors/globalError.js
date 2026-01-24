@@ -8,10 +8,21 @@ const sendErrorDev = (err, res) => {
 };
 
 const sendErrorProd = (err, res) => {
-  return res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  });
+  if (err.isOperational) {
+    return res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+    });
+  } else {
+    // 1) Log error
+    console.error('ERROR 💥', err);
+
+    // 2) Send generic message
+    return res.status(500).json({
+      status: 'error',
+      message: 'Something went very wrong, Please try again later',
+    });
+  }
 };
 
 const globalError = (err, req, res, next) => {
