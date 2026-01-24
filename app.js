@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
 // health check route
 app.get('/health', (req, res, next) => {
-  res.status(200).json({
+  return res.status(200).json({
     status: 'ok',
     // How long the server has been running (in seconds)
     uptime: process.uptime(),

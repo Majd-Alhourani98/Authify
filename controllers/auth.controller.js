@@ -6,7 +6,7 @@ const signup = catchAsync(async (req, res) => {
 
   const user = await User.create({ name, email, password, passwordConfirm });
 
-  res.status(201).json({
+  return res.status(201).json({
     status: 'success',
     data: { user: user },
   });
