@@ -1,3 +1,5 @@
+const { createShortId } = require('../utils/nanoid');
+
 const sendErrorDev = (err, res) => {
   return res.status(err.statusCode).json({
     status: err.status,
@@ -7,22 +9,34 @@ const sendErrorDev = (err, res) => {
   });
 };
 
-const sendErrorProd = (err, res) => {
+const sendErrorProd = (err, req, res) => {
+  // A) Operational, trusted error: send message to client
   if (err.isOperational) {
     return res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
     });
-  } else {
-    // 1) Log error
-    console.error('ERROR 💥', err);
-
-    // 2) Send generic message
-    return res.status(500).json({
-      status: 'error',
-      message: 'Something went very wrong, Please try again later',
-    });
   }
+
+  // B) Programming or other unknown error: don't leak error details
+  const errorId = createShortId();
+
+  // 1) Enhanced Logging for Debugging
+  console.error('--- 💥💥💥💥💥💥 CRITICAL ERROR 💥💥💥💥💥💥 ---');
+  console.error(`ID:        ${errorId}`);
+  console.error(`Time:      ${new Date().toISOString()}`);
+  console.error(`Path:      ${req.method} ${req.originalUrl}`);
+  console.error(`IP:        ${req.ip}`);
+  console.error(`Message:   ${err.message}`);
+  console.error(`Stack:     ${err.stack}`);
+  console.error('-----------------------');
+
+  // 2) Send professional, clean message to client
+  return res.status(500).json({
+    status: 'error',
+    message: 'An unexpected error occurred. Please try again later.',
+    supportId: errorId, // Sending it as a separate field is cleaner for frontend handling
+  });
 };
 
 const globalError = (err, req, res, next) => {
@@ -32,7 +46,7 @@ const globalError = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     return sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    return sendErrorProd(err, res);
+    return sendErrorProd(err, req, res);
   }
 };
 
