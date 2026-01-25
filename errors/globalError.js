@@ -12,6 +12,15 @@ const handleDuplicateFieldsDB = err => {
   return new AppError(`Duplicate field: ${field}: "${value}". Please use another value.`, 400);
 };
 
+const handleValidationErrorDB = err => {
+  // Extract all the error messages from the 'errors' object
+  const errors = Object.values(err.errors).map(el => el.message);
+
+  const message = `Invalid input data. ${errors.join('. ')}`;
+  return new AppError(message, 400);
+  //   return new AppError(err.message, 400);
+};
+
 const sendErrorDev = (err, res) => {
   return res.status(err.statusCode).json({
     status: err.status,
@@ -41,6 +50,7 @@ const sendErrorProd = (err, req, res) => {
   console.error(`IP:        ${req.ip}`);
   console.error(`Message:   ${err.message}`);
   console.error(`Stack:     ${err.stack}`);
+  console.error(`Error:     ${err}`);
   console.error('-----------------------');
 
   // 2) Send professional, clean message to client
@@ -66,6 +76,8 @@ const globalError = (err, req, res, next) => {
       error = handleCastErrorDB(error);
     } else if (error.code === 11000) {
       error = handleDuplicateFieldsDB(error);
+    } else if (error.name === 'ValidationError') {
+      error = handleValidationErrorDB(error);
     }
 
     return sendErrorProd(error, req, res);
