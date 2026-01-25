@@ -21,6 +21,22 @@ const handleValidationErrorDB = err => {
   //   return new AppError(err.message, 400);
 };
 
+const transformError = err => {
+  let error = { ...err };
+  error.name = err.name;
+  error.message = err.message;
+
+  if (error.name === 'CastError') {
+    error = handleCastErrorDB(error);
+  } else if (error.code === 11000) {
+    error = handleDuplicateFieldsDB(error);
+  } else if (error.name === 'ValidationError') {
+    error = handleValidationErrorDB(error);
+  }
+
+  return error;
+};
+
 const sendErrorDev = (err, res) => {
   return res.status(err.statusCode).json({
     status: err.status,
@@ -68,18 +84,7 @@ const globalError = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     return sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    let error = { ...err };
-    error.name = err.name;
-    error.message = err.message;
-
-    if (error.name === 'CastError') {
-      error = handleCastErrorDB(error);
-    } else if (error.code === 11000) {
-      error = handleDuplicateFieldsDB(error);
-    } else if (error.name === 'ValidationError') {
-      error = handleValidationErrorDB(error);
-    }
-
+    const error = transformError(err);
     return sendErrorProd(error, req, res);
   }
 };
