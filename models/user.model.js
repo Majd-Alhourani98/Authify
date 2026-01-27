@@ -45,6 +45,21 @@ const userSchema = new mongoose.Schema(
         message: 'Passwords do not match',
       },
     },
+
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    emailVerificationOTP: {
+      type: String,
+      select: false,
+    },
+
+    emailVerificationOTPExpiresAt: {
+      type: Date,
+      select: false,
+    },
   },
   {
     // timestamps: true
@@ -58,6 +73,8 @@ const userSchema = new mongoose.Schema(
 userSchema.set('toJSON', {
   transform: function (doc, ret) {
     delete ret.password;
+    delete ret.emailVerificationOTP;
+    delete ret.emailVerificationOTPExpiresAt;
 
     return ret;
   },
