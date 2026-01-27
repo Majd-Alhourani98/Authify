@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { hashPassword } = require('../utils/argon2');
 const { createShortId } = require('../utils/nanoid');
+const { generateSecureOTP } = require('../utils/crypto');
 
 const userSchema = new mongoose.Schema(
   {
@@ -110,6 +111,15 @@ userSchema.pre('save', async function () {
     this.username = username;
   }
 });
+
+userSchema.methods.generateEmailVerificationOTP = function () {
+  const { otp, hashedOTP, otpExpires } = generateSecureOTP();
+
+  this.emailVerificationOTP = hashedOTP;
+  this.emailVerificationOTPExpiresAt = otpExpires;
+
+  return otp;
+};
 
 const User = mongoose.model('User', userSchema);
 
