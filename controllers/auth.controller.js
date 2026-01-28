@@ -9,8 +9,6 @@ const signup = catchAsync(async (req, res) => {
 
   const otp = user.generateEmailVerificationOTP();
 
-  await user.save();
-
   try {
     await sendEmail({
       to: user.email,
@@ -20,8 +18,8 @@ const signup = catchAsync(async (req, res) => {
   } catch (err) {
     user.emailVerificationOTP = undefined;
     user.emailVerificationOTPExpiresAt = undefined;
-
-    await user.save({ validateBeforeSave: false });
+  } finally {
+    await user.save();
   }
 
   return res.status(201).json({
