@@ -8,7 +8,7 @@ const signup = catchAsync(async (req, res) => {
 
   const otp = user.generateEmailVerificationOTP();
 
-  await user.save({ validateBeforeSave: false });
+  await user.save();
 
   return res.status(201).json({
     status: 'success',
