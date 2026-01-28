@@ -1,5 +1,6 @@
 const catchAsync = require('../errors/catchAsync');
 const User = require('../models/user.model');
+const sendEmail = require('../utils/email');
 
 const signup = catchAsync(async (req, res) => {
   const { name, email, password, passwordConfirm } = req.body;
@@ -9,6 +10,19 @@ const signup = catchAsync(async (req, res) => {
   const otp = user.generateEmailVerificationOTP();
 
   await user.save();
+
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: 'Verify your email',
+      text: `Your OTP for email verification is: ${otp} `,
+    });
+  } catch (err) {
+    user.emailVerificationOTP = undefined;
+    user.emailVerificationOTPExpiresAt = undefined;
+
+    await user.save({ validateBeforeSave: false });
+  }
 
   return res.status(201).json({
     status: 'success',
